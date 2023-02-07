@@ -8,7 +8,7 @@
 
 import UIKit
 
-class WeatherViewController: UIViewController, UITextFieldDelegate {
+class WeatherViewController: UIViewController, UITextFieldDelegate, WeatherManagerDelegate {
 
     @IBOutlet weak var conditionImageView: UIImageView!
     @IBOutlet weak var temperatureLabel: UILabel!
@@ -21,8 +21,8 @@ class WeatherViewController: UIViewController, UITextFieldDelegate {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         
-        searchTextField.delegate = self // the current view controller becomes the delegate for the search field, constantly updating what is happening in the searh field to the view controller
-        
+        searchTextField.delegate = self // the current view controller becomes the delegate for the search field, constantly updating what is happening in the search field to the view controller
+        weatherManager.delegate = self
     }
 
 
@@ -54,6 +54,19 @@ class WeatherViewController: UIViewController, UITextFieldDelegate {
             textField.placeholder = "Please type a location"
             return false
         }
+    }
+    
+    func didUpdateWeather(_ weatherManager: WeatherManager, weather: WeatherModel) {
+//        print("I got triggered. You wrote \(weather.cityName)")
+        DispatchQueue.main.async {
+            self.temperatureLabel.text = weather.temperatureString
+            self.conditionImageView.image = UIImage(systemName: weather.conditionName)
+            self.cityLabel.text = weather.cityName
+        }
+    }
+    
+    func didFailWithError(error: Error) {
+        print(error)
     }
 }
 
