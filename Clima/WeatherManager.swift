@@ -7,15 +7,22 @@
 //
 
 import Foundation
+import CoreLocation
 
 struct WeatherManager {
     var delegate: WeatherManagerDelegate?
     
     let weatherURL = "https://api.openweathermap.org/data/2.5/weather?appid=d107e64a83935fb95aafe7864d6e1952&units=imperial"
+    
     // "q={cityName}"
     func fetchWeather(cityName: String) {
         let encodedCityName = cityName.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? ""
         let urlString = weatherURL + "&q=\(encodedCityName)"
+        performRequest(with: urlString)
+    }
+    
+    func fetchWeather(latitude: CLLocationDegrees, longitude: CLLocationDegrees) {
+        let urlString = weatherURL + "&lat=\(latitude)&lon=\(longitude)"
         performRequest(with: urlString)
     }
     
@@ -58,7 +65,6 @@ struct WeatherManager {
             let name = decodedData.name
             
             let weather = WeatherModel(conditionId: id, cityName: name, temperature: temp)
-            print(weather.temperatureString)
             return weather
 //            print(weather.temperatureString)
         } catch {
